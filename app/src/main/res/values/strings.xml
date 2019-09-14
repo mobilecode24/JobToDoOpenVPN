@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Job To Do OpenVPN</string>
+    <string name="vpn_perm_label">Zarządzanie połączeniami OpenVPN</string>
+    <string name="vpn_perm_desc">Umożliwia aplikacji tworzenie połączenia OpenVPN i
+        zarządzania nim</string>
+    <string name="vpn_title">Połączenie OpenVPN</string>
+    <string name="connected">Połączono</string>
+    <string name="vpn_channel_name">Połączenia OpenVPN</string>
+</resources>

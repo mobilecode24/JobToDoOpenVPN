@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="pl.mobit.jobtodoopenvpn">
+
+    <permission
+        android:name="pl.mobit.permission.VPN_SERVICE"
+        android:description="@string/vpn_perm_desc"
+        android:label="@string/vpn_perm_label"
+        android:protectionLevel="signature" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="pl.mobit.permission.VPN_SERVICE" />
+
+    <application
+        android:name="de.blinkt.openvpn.core.App"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:usesCleartextTraffic="true">
+
+        <activity
+            android:name=".OpenVpnActivity"
+            android:excludeFromRecents="true"
+            android:theme="@android:style/Theme.DeviceDefault.Light.Panel"
+            android:exported="true"
+            android:permission="pl.mobit.permission.VPN_SERVICE">
+            <intent-filter>
+                <action android:name="pl.mobit.action.START_VPN" />
+                <action android:name="pl.mobit.action.STOP_VPN" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <service
+            android:name="de.blinkt.openvpn.core.OpenVPNService"
+            android:permission="android.permission.BIND_VPN_SERVICE">
+            <intent-filter>
+                <action android:name="android.net.VpnService" />
+            </intent-filter>
+            <meta-data android:name="android.net.VpnService.SUPPORTS_ALWAYS_ON"
+                android:value="false"/>
+        </service>
+    </application>
+</manifest>
