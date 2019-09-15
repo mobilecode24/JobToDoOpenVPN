@@ -6,14 +6,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.net.VpnService;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.InputStreamReader;
 import java.util.UUID;
 
 import de.blinkt.openvpn.VpnProfile;
+import de.blinkt.openvpn.core.ConfigParser;
 import de.blinkt.openvpn.core.IOpenVPNServiceInternal;
 import de.blinkt.openvpn.core.OpenVPNService;
 import de.blinkt.openvpn.core.ProfileManager;
@@ -62,8 +67,10 @@ public class OpenVpnActivity extends Activity {
                 uuid = (UUID) getIntent().getSerializableExtra("uuid");
                 switch (action) {
                     case Utils.ACTION_START_VPN:
-                        if(getIntent().hasExtra("profile")) {
+                        if(getIntent().hasExtra("profile") || getIntent().hasExtra("config")) {
                             startVPN();
+                        } else {
+                            finish();
                         }
                         return;
                     case Utils.ACTION_STOP_VPN:
@@ -92,6 +99,21 @@ public class OpenVpnActivity extends Activity {
     private void startVPN() {
         try {
             vpnProfile = (VpnProfile) getIntent().getSerializableExtra("profile");
+            if(vpnProfile == null) {
+                ConfigParser cp = new ConfigParser();
+                cp.parseConfig(new BufferedReader(new InputStreamReader(new ByteArrayInputStream(getIntent().getStringExtra("config").getBytes()))));
+                VpnProfile vp = cp.convertProfile();
+                vp.mName = Build.MODEL;
+                if(getIntent().hasExtra("username")) {
+                    vp.mUsername = getIntent().getStringExtra("username");
+                    vp.mPassword = getIntent().getStringExtra("password");
+                }
+                if(getIntent().hasExtra("allow_pkg")) {
+                    vp.mAllowedAppsVpn.add("pl.mobit.jobtodo");
+                    vp.mAllowedAppsVpnAreDisallowed = false;
+                }
+                vpnProfile = vp;
+            }
 
             VpnStatus.clearLog();
 
@@ -123,6 +145,7 @@ public class OpenVpnActivity extends Activity {
     private void stopVPN() {
         stop = true;
         ProfileManager.setConntectedVpnProfileDisconnected(this);
+        ProfileManager.removeTemporaryProfile(this);
     }
 
     private void returnError(Exception e) {

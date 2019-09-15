@@ -211,4 +211,10 @@ public class ProfileManager {
         context.deleteFile(vpnentry + ".vp");
         if (mLastConnectedVpn == profile) mLastConnectedVpn = null;
     }
+
+    public static void removeTemporaryProfile(Context context) {
+        context.deleteFile(TEMPORARY_PROFILE_FILENAME + ".vp");
+        tmpprofile = null;
+        if (mLastConnectedVpn == tmpprofile) mLastConnectedVpn = null;
+    }
 }
